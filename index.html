@@ -4,124 +4,303 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ana Caroline Santos - Segurança da Informação</title>
+    
+    <!-- Meta tags para SEO e compartilhamento -->
+    <meta name="description" content="Especialista em Segurança da Informação | Prosa Tech Cybersec | Cartão digital NFC com tema hacker rosa neon">
+    <meta name="keywords" content="cybersecurity, segurança da informação, hacking ético, pentesting, Ana Caroline Santos">
+    <meta name="author" content="Ana Caroline Santos">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="profile">
+    <meta property="og:title" content="Ana Caroline Santos - Especialista em Cybersecurity">
+    <meta property="og:description" content="Cartão de visita digital com NFC - Prosa Tech Cybersec">
+    <meta property="og:image" content="images/logo.jpg">
+    <meta property="og:url" content="https://carolsnt.dev">
+    <meta property="og:site_name" content="Carol Santos - Cybersec">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Ana Caroline Santos - Cybersecurity">
+    <meta name="twitter:description" content="Especialista em Segurança da Informação">
+    <meta name="twitter:image" content="images/logo.jpg">
+    
+    <!-- Favicon e PWA -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+    <link rel="apple-touch-icon" href="images/icon-192.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff2a6d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Carol Cybersec">
+    
+    <!-- Preconnects para performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="//wa.me">
+    
+    <!-- Fonts otimizadas -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Matrix Rain Background -->
-    <canvas id="matrixRain"></canvas>
-    
-    <!-- Neon Grid Background -->
-    <div class="neon-grid"></div>
-    
-    <!-- Floating Galaxies -->
-    <div class="galaxies">
-        <div class="galaxy"></div>
-        <div class="galaxy"></div>
-        <div class="galaxy"></div>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="loading-text">INICIALIZANDO SISTEMA...</div>
+            <div class="loading-progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="container">
-        <div class="card">
-            <div class="header">
-                <div class="profile">
-                    <div class="avatar" id="avatar">
-                        <img src="images/logo.jpg" alt="Mascote/Logo" class="avatar-img">
-                        <div class="status-indicator"></div>
+    <!-- Matrix Rain Canvas -->
+    <canvas id="matrixRain" role="presentation" aria-hidden="true"></canvas>
+    
+    <!-- Hack Animation Overlay -->
+    <div class="hack-animation" id="hackAnimation">
+        <div class="hack-content">
+            <div class="binary-rain" id="binaryRain"></div>
+            <div class="hack-terminal">
+                <div class="terminal-header">
+                    <span class="terminal-title">COPYING DATA...</span>
+                    <div class="terminal-controls">
+                        <span class="control-dot minimize"></span>
+                        <span class="control-dot maximize"></span>
+                        <span class="control-dot close"></span>
                     </div>
                 </div>
-                
-                <h1 class="name">Ana Caroline Santos</h1>
-                <p class="title">Segurança da Informação</p>
-                <p class="subtitle">Prosa Tech Cybersec</p>
-            </div>
-
-            <div class="links-section">
-                <h3 class="section-title">Conecte-se</h3>
-                
-                <div class="links-grid">
-                    <a href="https://prosatechcybersec.vercel.app/" target="_blank" rel="noopener noreferrer" class="link-card portfolio" data-platform="portfolio">
-                        <div class="link-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <span class="link-text">Portfólio</span>
-                    </a>
-                    
-                    <a href="https://www.youtube.com/channel/UCFCjY5HL585eF3O5-5pQ_4g" target="_blank" rel="noopener noreferrer" class="link-card youtube" data-platform="youtube">
-                        <div class="link-icon">
-                            <i class="fab fa-youtube"></i>
-                        </div>
-                        <span class="link-text">YouTube</span>
-                    </a>
-                    
-                    <a href="https://www.linkedin.com/in/carolsnt/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" data-platform="linkedin">
-                        <div class="link-icon">
-                            <i class="fab fa-linkedin"></i>
-                        </div>
-                        <span class="link-text">LinkedIn</span>
-                    </a>
-                    
-                    <a href="https://github.com/carolsnt" target="_blank" rel="noopener noreferrer" class="link-card github" data-platform="github">
-                        <div class="link-icon">
-                            <i class="fab fa-github"></i>
-                        </div>
-                        <span class="link-text">GitHub</span>
-                    </a>
-                    
-                    <a href="https://www.instagram.com/prosa.tech" target="_blank" rel="noopener noreferrer" class="link-card instagram" data-platform="instagram">
-                        <div class="link-icon">
-                            <i class="fab fa-instagram"></i>
-                        </div>
-                        <span class="link-text">Instagram</span>
-                    </a>
-                    
-                    <a href="https://wa.me/5511958203077?text=Olá%20Carol!%20Vim%20pelo%20seu%20cartão%20NFC%20" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" data-platform="whatsapp">
-                        <div class="link-icon">
-                            <i class="fab fa-whatsapp"></i>
-                        </div>
-                        <span class="link-text">WhatsApp</span>
-                    </a>
-                </div>
-            </div>
-
-            <div class="contact-section">
-                <h3 class="section-title">Contato</h3>
-                
-                <div class="contact-grid">
-                    <div class="contact-item" data-copy="prosa.tech.cybersec@gmail.com">
-                        <i class="fas fa-envelope"></i>
-                        <span>prosa.tech.cybersec@gmail.com</span>
+                <div class="terminal-content">
+                    <div class="hack-text" id="hackText">
+                        <span class="prompt">root@cybersec:~$ </span>
+                        <span class="command" id="hackCommand">copy --secure --encrypt</span>
                     </div>
-                    
-                    <div class="contact-item" data-copy="+55 11 95820-3077">
-                        <i class="fas fa-phone"></i>
-                        <span>+55 11 95820-3077</span>
-                    </div>
-                    
-                    <div class="contact-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>São Paulo, SP - Brasil</span>
-                    </div>
-                </div>
-                
-                <div class="nfc-badge">
-                    <div class="nfc-text">
-                        <i class="fas fa-wifi"></i>
-                        NFC ENABLED - TOQUE PARA CONECTAR
+                    <div class="progress-line">
+                        <span class="status" id="hackStatus">Connecting to secure server...</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="toast" id="toast">
-        <i class="fas fa-check-circle"></i>
-        <span id="toastText">Copiado para área de transferência!</span>
+    <!-- Main Container -->
+    <main class="container">
+        <!-- Profile Section -->
+        <aside class="profile" role="complementary">
+            <div class="profile-header">
+                <div class="profile-image-container">
+                    <img src="images/logo.jpg" alt="Ana Caroline Santos - Especialista em Cybersecurity" class="profile-img" loading="lazy">
+                    <div class="status-indicator">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Online</span>
+                    </div>
+                </div>
+                <h1 class="profile-name">Ana Caroline Santos</h1>
+                <p class="profile-bio">Especialista em Segurança da Informação</p>
+                <p class="profile-company">
+                    <i class="fas fa-building" aria-hidden="true"></i>
+                    Prosa Tech Cybersec
+                </p>
+            </div>
+            
+            <div class="profile-stats" role="group" aria-label="Estatísticas profissionais">
+                <div class="stat" data-aos="fade-up" data-aos-delay="100">
+                    <span class="stat-number" data-count="5">0</span>
+                    <span class="stat-label">Anos de Experiência</span>
+                </div>
+                <div class="stat" data-aos="fade-up" data-aos-delay="200">
+                    <span class="stat-number" data-count="100">0</span>
+                    <span class="stat-label">Projetos Realizados</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <section class="main-content">
+            <!-- Links Section -->
+            <div class="card" data-aos="fade-left">
+                <h2 class="card-title">
+                    <i class="fas fa-link" aria-hidden="true"></i>
+                    Conecte-se Comigo
+                </h2>
+                
+                <nav class="links-grid" role="navigation" aria-label="Links de redes sociais e portfólio">
+                    <a href="https://prosatechcybersec.vercel.app/" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="link-card portfolio"
+                       data-platform="portfolio"
+                       aria-label="Visitar meu portfólio - Prosa Tech Cybersec">
+                        <div class="link-icon" aria-hidden="true">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="link-content">
+                            <span class="link-text">Portfólio</span>
+                            <span class="link-desc">Projetos e cases de sucesso</span>
+                        </div>
+                        <i class="fas fa-external-link-alt link-arrow" aria-hidden="true"></i>
+                    </a>
+                    
+                    <a href="https://www.youtube.com/channel/UCFCjY5HL585eF3O5-5pQ_4g" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="link-card youtube"
+                       data-platform="youtube"
+                       aria-label="Meu canal no YouTube">
+                        <div class="link-icon" aria-hidden="true">
+                            <i class="fab fa-youtube"></i>
+                        </div>
+                        <div class="link-content">
+                            <span class="link-text">YouTube</span>
+                            <span class="link-desc">Conteúdos sobre cybersecurity</span>
+                        </div>
+                        <i class="fas fa-external-link-alt link-arrow" aria-hidden="true"></i>
+                    </a>
+                    
+                    <a href="https://www.linkedin.com/in/carolsnt/" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="link-card linkedin"
+                       data-platform="linkedin"
+                       aria-label="Meu perfil profissional no LinkedIn">
+                        <div class="link-icon" aria-hidden="true">
+                            <i class="fab fa-linkedin"></i>
+                        </div>
+                        <div class="link-content">
+                            <span class="link-text">LinkedIn</span>
+                            <span class="link-desc">Rede profissional</span>
+                        </div>
+                        <i class="fas fa-external-link-alt link-arrow" aria-hidden="true"></i>
+                    </a>
+                    
+                    <a href="https://github.com/carolsnt" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="link-card github"
+                       data-platform="github"
+                       aria-label="Meus repositórios no GitHub">
+                        <div class="link-icon" aria-hidden="true">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div class="link-content">
+                            <span class="link-text">GitHub</span>
+                            <span class="link-desc">Códigos e ferramentas</span>
+                        </div>
+                        <i class="fas fa-external-link-alt link-arrow" aria-hidden="true"></i>
+                    </a>
+                    
+                    <a href="https://www.instagram.com/prosa.tech" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="link-card instagram"
+                       data-platform="instagram"
+                       aria-label="Perfil da Prosa Tech no Instagram">
+                        <div class="link-icon" aria-hidden="true">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                        <div class="link-content">
+                            <span class="link-text">Instagram</span>
+                            <span class="link-desc">Dicas e novidades</span>
+                        </div>
+                        <i class="fas fa-external-link-alt link-arrow" aria-hidden="true"></i>
+                    </a>
+                    
+                    <a href="https://wa.me/5511958203077?text=Olá%20Carol!%20Vim%20pelo%20seu%20cartão%20NFC%20" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="link-card whatsapp"
+                       data-platform="whatsapp"
+                       aria-label="Conversar comigo no WhatsApp">
+                        <div class="link-icon" aria-hidden="true">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="link-content">
+                            <span class="link-text">WhatsApp</span>
+                            <span class="link-desc">Conversa direta</span>
+                        </div>
+                        <i class="fas fa-external-link-alt link-arrow" aria-hidden="true"></i>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="card" data-aos="fade-left" data-aos-delay="100">
+                <h2 class="card-title">
+                    <i class="fas fa-address-card" aria-hidden="true"></i>
+                    Informações de Contato
+                </h2>
+                
+                <div class="contact-grid" role="group" aria-label="Informações de contato">
+                    <button class="contact-item copyable" 
+                            data-copy="prosa.tech.cybersec@gmail.com"
+                            aria-label="Copiar e-mail para área de transferência">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope" aria-hidden="true"></i>
+                        </div>
+                        <div class="contact-content">
+                            <span class="contact-label">E-mail</span>
+                            <span class="contact-value">prosa.tech.cybersec@gmail.com</span>
+                        </div>
+                    </button>
+                    
+                    <button class="contact-item copyable" 
+                            data-copy="+55 11 95820-3077"
+                            aria-label="Copiar telefone para área de transferência">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone" aria-hidden="true"></i>
+                        </div>
+                        <div class="contact-content">
+                            <span class="contact-label">Telefone</span>
+                            <span class="contact-value">+55 11 95820-3077</span>
+                        </div>
+                    </button>
+                    
+                    <div class="contact-item location" role="text">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                        </div>
+                        <div class="contact-content">
+                            <span class="contact-label">Localização</span>
+                            <span class="contact-value">São Paulo, SP - Brasil</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nfc-badge" role="banner">
+                    <div class="nfc-content">
+                        <div class="nfc-icon">
+                            <i class="fas fa-wifi" aria-hidden="true"></i>
+                        </div>
+                        <div class="nfc-text">
+                            <span class="nfc-title">NFC ENABLED</span>
+                            <span class="nfc-subtitle">Toque para conectar instantaneamente</span>
+                        </div>
+                    </div>
+                    <div class="nfc-waves">
+                        <span class="wave"></span>
+                        <span class="wave"></span>
+                        <span class="wave"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer" aria-live="polite" role="status">
+        <!-- Toasts will be dynamically inserted here -->
     </div>
 
-    <script src="app.js"></script>
+    <!-- Scripts -->
+    <script src="app.js" defer></script>
 </body>
 </html>
