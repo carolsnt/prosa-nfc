@@ -301,7 +301,8 @@ img {
 /* ========================================
    LAYOUT - DESKTOP FIXO PARA MOBILE
 ======================================== */
-.container {
+
+   .container {
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
@@ -313,8 +314,7 @@ img {
     min-height: 100vh;
     position: relative;
     z-index: var(--z-content);
-    transform-origin: top center;
-    transform: scale(0.9); /* Reduz um pouco para caber em telas menores */
+    /* REMOVE transform: scale */
 }
 
 /* ========================================
@@ -1082,7 +1082,7 @@ img {
         grid-template-columns: 300px 1fr;
         gap: 2rem;
         padding: 1.5rem;
-        transform: none;
+        
     }
     
     .profile {
@@ -1175,4 +1175,14 @@ img {
     .link-card:hover {
         transform: none;
     }
+}
+/* ========================================
+   CORREÇÃO DE CORES - GARANTIR TEMA ESCURO
+======================================== */
+body {
+    background: linear-gradient(135deg, #05010a 0%, #0f0515 30%, #0a0f1f 70%, #05010a 100%) !important;
+}
+
+.container {
+    transform: none !important;
 }
