@@ -967,33 +967,156 @@ img {
 }
 
 /* ========================================
-   AJUSTES PARA MOBILE - MANTENDO LAYOUT DESKTOP
+   RESPONSIVE DESIGN - MOBILE FIRST
+   Ajustes específicos para mobile
+======================================== */
+@media (max-width: 767px) {
+    .container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1rem;
+        transform: none; /* Remove o scale */
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .profile {
+        position: static;
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+    
+    .profile-img {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .profile-name {
+        font-size: 1.8rem;
+    }
+    
+    .profile-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .stat {
+        padding: 0.75rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .card {
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+    
+    .card-title {
+        font-size: 1.4rem;
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .links-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .link-card {
+        padding: 1.25rem;
+        gap: 1rem;
+    }
+    
+    .link-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+    }
+    
+    .contact-grid {
+        gap: 0.75rem;
+    }
+    
+    .contact-item {
+        padding: 1.25rem;
+        gap: 1rem;
+    }
+    
+    .contact-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
+    }
+    
+    /* Ajustes para textos longos em mobile */
+    .contact-value {
+        font-size: 0.9rem;
+        word-break: break-word;
+    }
+    
+    .nfc-badge {
+        padding: 1.25rem;
+    }
+    
+    /* Melhorias de toque para mobile */
+    .link-card, 
+    .contact-item.copyable {
+        min-height: 60px;
+    }
+    
+    /* Ajuste no matrix rain para mobile */
+    #matrixRain {
+        opacity: 0.4; /* Reduz um pouco a intensidade em mobile */
+    }
+}
+
+/* ========================================
+   TABLET (768px - 1023px)
+   Mantém o layout desktop mas com ajustes
+======================================== */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .container {
+        grid-template-columns: 300px 1fr;
+        gap: 2rem;
+        padding: 1.5rem;
+        transform: none;
+    }
+    
+    .profile {
+        padding: 1.5rem;
+    }
+    
+    .profile-img {
+        width: 140px;
+        height: 140px;
+    }
+    
+    .profile-name {
+        font-size: 2rem;
+    }
+    
+    .links-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========================================
+   AJUSTES PARA TELAS MAIORES
 ======================================== */
 @media (max-width: 1200px) {
     .container {
-        transform: scale(0.85);
-        padding: 1.5rem;
+        gap: 2rem;
+        padding: 2rem;
     }
 }
 
 @media (max-width: 992px) {
     .container {
-        transform: scale(0.75);
-        padding: 1rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        transform: scale(0.65);
-        padding: 0.5rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .container {
-        transform: scale(0.55);
-        padding: 0.25rem;
+        gap: 1.5rem;
+        padding: 1.5rem;
     }
 }
 
