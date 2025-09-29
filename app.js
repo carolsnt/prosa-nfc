@@ -1,3 +1,39 @@
+// ========================================
+// CORREÇÕES PARA iOS - TEMA ESCURO
+// ========================================
+
+// Forçar tema escuro e prevenir comportamentos padrão do iOS
+function forceDarkTheme() {
+    console.log('Aplicando tema escuro forçado...');
+    
+    // Aplicar background diretamente no body e html
+    document.body.style.background = 'linear-gradient(135deg, #05010a 0%, #0f0515 30%, #0a0f1f 70%, #05010a 100%)';
+    document.body.style.backgroundAttachment = 'fixed';
+    document.documentElement.style.background = '#05010a';
+}
+
+// Corrigir altura da viewport para iOS
+function setVH() {
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+// Aplicar correções específicas para Safari
+function applySafariFixes() {
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    
+    if (isSafari || isIOS) {
+        console.log('Aplicando correções para Safari/iOS...');
+        
+        // Forçar repaint para garantir que o tema escuro seja aplicado
+        document.body.style.opacity = '0.99';
+        setTimeout(() => {
+            document.body.style.opacity = '1';
+        }, 50);
+    }
+}
+
 // Função para copiar texto com animação hacker
 function copyWithHackAnimation(text, message) {
     // Ativar animação hacker
@@ -152,8 +188,13 @@ function animateCounter() {
     });
 }
 
-// Inicialização quando o DOM estiver carregado
+//// Inicialização quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
+    // Aplicar correções de tema primeiro
+    forceDarkTheme();
+    applySafariFixes();
+    setVH();
+    
     // Configurar Matrix Rain
     setupMatrix();
     setInterval(drawMatrix, 35);
@@ -172,10 +213,31 @@ document.addEventListener('DOMContentLoaded', function() {
         animateCounter();
     }, 3000);
     
+    console.log('Página carregada com sucesso! Tema escuro forçado.');
+});
+    
+    // Simular carregamento
+    setTimeout(() => {
+        document.getElementById('loadingScreen').classList.add('hidden');
+        animateCounter();
+    }, 3000);
+    
     console.log('Página carregada com sucesso!');
 });
 
 // Ajustar canvas quando a janela for redimensionada
 window.addEventListener('resize', function() {
     setupMatrix();
+});
+// Ajustar canvas e VH quando a janela for redimensionada
+window.addEventListener('resize', function() {
+    setupMatrix();
+    setVH();
+});
+
+window.addEventListener('orientationchange', function() {
+    setTimeout(() => {
+        setVH();
+        setupMatrix();
+    }, 300);
 });

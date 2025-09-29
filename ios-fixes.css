@@ -1,0 +1,55 @@
+/* ========================================
+   CORREÇÕES ESPECÍFICAS PARA iOS SAFARI
+   Arquivo: ios-fixes.css
+======================================== */
+
+/* Garantir que o background cubra toda a tela */
+html, body {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: linear-gradient(135deg, #05010a 0%, #0f0515 30%, #0a0f1f 70%, #05010a 100%) !important;
+    background-attachment: fixed !important;
+}
+
+/* Container principal com altura correta para iOS */
+.container {
+    min-height: 100vh;
+    min-height: -webkit-fill-available; /* Para iOS */
+    background: transparent !important;
+}
+
+/* Correções específicas para Safari iOS */
+@supports (-webkit-touch-callout: none) {
+    body {
+        -webkit-text-size-adjust: 100%;
+        -webkit-font-smoothing: antialiased;
+        -webkit-overflow-scrolling: touch;
+        background: linear-gradient(135deg, #05010a 0%, #0f0515 30%, #0a0f1f 70%, #05010a 100%) !important;
+    }
+    
+    .container, .profile, .card {
+        -webkit-backface-visibility: hidden;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+    
+    /* Prevenir seleção de texto em elementos interativos */
+    .link-card, .contact-item {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+}
+
+/* Garantir que todos os elementos tenham fundo transparente */
+.profile, .card, .loading-screen, .hack-animation {
+    background: transparent !important;
+}
+
+/* Forçar cores do tema em todos os estados */
+body {
+    color: var(--text-primary) !important;
+    background: linear-gradient(135deg, #05010a 0%, #0f0515 30%, #0a0f1f 70%, #05010a 100%) !important;
+}
