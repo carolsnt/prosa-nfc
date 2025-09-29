@@ -58,6 +58,7 @@
 html {
     scroll-behavior: smooth;
     font-size: 16px;
+    color-scheme: dark;
 }
 
 body {
@@ -70,6 +71,13 @@ body {
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Forçar fundo escuro no iOS */
+    background-color: #05010a;
+}
+
+/* Garantir que todos os elementos tenham fundo escuro */
+body * {
+    color-scheme: dark;
 }
 
 button {
@@ -77,6 +85,7 @@ button {
     border: none;
     background: none;
     font: inherit;
+    color: inherit;
 }
 
 a {
@@ -301,8 +310,7 @@ img {
 /* ========================================
    LAYOUT - DESKTOP FIXO PARA MOBILE
 ======================================== */
-
-   .container {
+.container {
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
@@ -314,7 +322,6 @@ img {
     min-height: 100vh;
     position: relative;
     z-index: var(--z-content);
-    /* REMOVE transform: scale */
 }
 
 /* ========================================
@@ -975,7 +982,6 @@ img {
         grid-template-columns: 1fr;
         gap: 1.5rem;
         padding: 1rem;
-        transform: none; /* Remove o scale */
         width: 100%;
         max-width: 100%;
     }
@@ -1082,7 +1088,6 @@ img {
         grid-template-columns: 300px 1fr;
         gap: 2rem;
         padding: 1.5rem;
-        
     }
     
     .profile {
@@ -1176,13 +1181,30 @@ img {
         transform: none;
     }
 }
+
 /* ========================================
-   CORREÇÃO DE CORES - GARANTIR TEMA ESCURO
+   CORREÇÃO DE CORES - GARANTIR TEMA ESCURO NO iOS
 ======================================== */
-body {
-    background: linear-gradient(135deg, #05010a 0%, #0f0515 30%, #0a0f1f 70%, #05010a 100%) !important;
+@media (prefers-color-scheme: light) {
+    body {
+        background: linear-gradient(135deg, #05010a 0%, #0f0515 30%, #0a0f1f 70%, #05010a 100%) !important;
+        color: #ffffff !important;
+    }
+    
+    .profile,
+    .card {
+        background: rgba(0, 0, 0, 0.4) !important;
+        color: #ffffff !important;
+    }
 }
 
-.container {
-    transform: none !important;
+/* Forçar tema escuro em todos os navegadores */
+body {
+    background-color: #05010a !important;
+    color: #ffffff !important;
+}
+
+/* Garantir que inputs e outros elementos herdem o tema escuro */
+input, textarea, select {
+    color-scheme: dark;
 }
