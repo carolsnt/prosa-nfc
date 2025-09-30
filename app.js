@@ -1,7 +1,7 @@
 /**
  * Cartão Digital - Ana Caroline Santos
  * Segurança da Informação - Prosa Tech Cybersec
- * Versão: 2.0.0
+ * Versão: 2.0.1
  */
 
 // Configurações globais
@@ -42,6 +42,12 @@ function copyWithHackAnimation(text, message) {
     if (STATE.isCopying) return;
     
     STATE.isCopying = true;
+    
+    // Bloquear scroll
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.height = '100%';
     
     // Ativar animação hacker
     const hackAnimation = DOM.hackAnimation;
@@ -138,6 +144,11 @@ function handleCopySuccess(hackText, hackAnimation, message) {
     
     setTimeout(() => {
         hackAnimation.classList.remove('active');
+        // Desbloquear scroll
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.height = '';
         showToast(message);
     }, 1000);
 }
@@ -150,6 +161,11 @@ function handleCopyError(hackText, hackAnimation) {
     
     setTimeout(() => {
         hackAnimation.classList.remove('active');
+        // Desbloquear scroll
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.height = '';
         showToast('Falha ao copiar. Tente novamente.');
     }, 1500);
 }
@@ -213,7 +229,7 @@ function escapeHTML(text) {
 
 // Matrix Rain Effect
 const canvas = document.getElementById('matrixRain');
-const ctx = canvas.getContext('2d');
+const ctx = canvas ? canvas.getContext('2d') : null;
 
 let matrixChars = CONFIG.matrix.chars.split('');
 let fontSize = CONFIG.matrix.desktopFontSize;
@@ -224,7 +240,7 @@ const drops = [];
  * Configura o canvas do Matrix Rain
  */
 function setupMatrix() {
-    if (!canvas) return;
+    if (!canvas || !ctx) return;
     
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -354,6 +370,23 @@ function debounce(func, wait) {
 }
 
 /**
+ * Previne comportamento padrão do Safari iOS no scroll
+ */
+function preventIOSScroll() {
+    let lastY = 0;
+    
+    document.addEventListener('touchstart', function(e) {
+        lastY = e.touches[0].clientY;
+    }, { passive: false });
+    
+    document.addEventListener('touchmove', function(e) {
+        if (DOM.hackAnimation && DOM.hackAnimation.classList.contains('active')) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+}
+
+/**
  * Inicialização quando o DOM estiver carregado
  */
 document.addEventListener('DOMContentLoaded', function() {
@@ -364,12 +397,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Configurar Matrix Rain
     setupMatrix();
-    if (DOM.matrixCanvas) {
+    if (DOM.matrixCanvas && ctx) {
         STATE.matrixInterval = setInterval(drawMatrix, CONFIG.matrix.speed);
     }
     
     // Configurar eventos de cópia
     initCopyListeners();
+    
+    // Prevenir problemas de scroll no iOS
+    preventIOSScroll();
     
     // Simular carregamento
     simulateLoading();
@@ -394,10 +430,42 @@ window.addEventListener('beforeunload', function() {
 });
 
 /**
- * Prevenir comportamento padrão em links
+ * Prevenir comportamento padrão em links copyable
  */
 document.addEventListener('click', function(e) {
-    if (e.target.matches('.copyable')) {
+    if (e.target.closest('.copyable')) {
         e.preventDefault();
     }
 });
+
+/**
+ * Prevenir zoom no iOS ao focar em inputs (caso adicione no futuro)
+ */
+document.addEventListener('touchstart', function() {}, { passive: true });
+
+/**
+ * Handler para orientação do dispositivo
+ */
+window.addEventListener('orientationchange', debounce(function() {
+    setupMatrix();
+}, 300));
+
+/**
+ * Detectar se está em modo standalone (PWA instalado)
+ */
+if (window.matchMedia('(display-mode: standalone)').matches) {
+    console.log('📱 Executando como PWA');
+}
+
+/**
+ * Service Worker para PWA (opcional - descomentar se tiver service worker)
+ */
+/*
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('✅ Service Worker registrado'))
+            .catch(err => console.log('❌ Erro ao registrar Service Worker:', err));
+    });
+}
+*/
