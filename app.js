@@ -1,10 +1,9 @@
 /**
- * Cartão Digital - Ana Caroline Santos
- * Segurança da Informação - Prosa Tech Cybersec
- * Versão: 2.0.1
+ * Cartão digital de Ana Caroline Santos.
+ * Este arquivo inicializa os efeitos visuais e os controles da página.
  */
 
-// Configurações globais
+// Valores usados por mais de uma função ficam reunidos aqui para facilitar ajustes.
 const CONFIG = {
     matrix: {
         speed: 35,
@@ -19,7 +18,7 @@ const CONFIG = {
     }
 };
 
-// Cache de elementos DOM
+// As referências são preenchidas uma vez após o HTML carregar e reaproveitadas.
 const DOM = {
     hackAnimation: null,
     hackText: null,
@@ -29,39 +28,40 @@ const DOM = {
     loadingScreen: null
 };
 
-// Estado da aplicação
+// Estado compartilhado entre eventos: evita cópias simultâneas e guarda o timer do Matrix.
 const STATE = {
     isCopying: false,
     matrixInterval: null
 };
 
 /**
- * Função para copiar texto com animação hacker
+ * Coordena a animação e a cópia real como etapas separadas.
+ * O estado bloqueia cliques duplicados enquanto a primeira cópia está em andamento.
  */
 function copyWithHackAnimation(text, message) {
     if (STATE.isCopying) return;
     
     STATE.isCopying = true;
     
-    // Bloquear scroll
+    // O overlay cobre a página; bloquear o scroll impede o conteúdo de se mover por trás.
     document.body.style.overflow = 'hidden';
     document.body.style.position = 'fixed';
     document.body.style.width = '100%';
     document.body.style.height = '100%';
     
-    // Ativar animação hacker
+    // O terminal mostra uma versão curta; a cópia abaixo ainda usa o texto completo.
     const hackAnimation = DOM.hackAnimation;
     const hackText = DOM.hackText;
     const binaryRain = DOM.binaryRain;
     
     const truncatedText = text.length > 15 ? text.substring(0, 15) + '...' : text;
-    hackText.innerHTML = `<span class="prompt">root@cybersec:~$ </span><span class="command">copy "${truncatedText}"</span>`;
+    renderHackText(hackText, `copy "${truncatedText}"`);
     hackAnimation.classList.add('active');
     
-    // Criar chuva binária otimizada
+    // Criar os elementos fora da página antes de inseri-los em lote.
     createBinaryRain(binaryRain);
     
-    // Simular processo de cópia hacker
+    // O atraso sincroniza o resultado da Clipboard API com a animação do terminal.
     setTimeout(() => {
         copyToClipboard(text)
             .then(() => {
@@ -72,79 +72,71 @@ function copyWithHackAnimation(text, message) {
                 handleCopyError(hackText, hackAnimation);
             })
             .finally(() => {
+                // `finally` roda tanto no sucesso quanto no erro e sempre libera novos cliques.
                 STATE.isCopying = false;
             });
     }, CONFIG.animation.copyDuration);
 }
 
 /**
- * Copia texto para a área de transferência
+ * Atualiza o terminal sem interpretar o texto como HTML.
+ * `textContent` faz com que caracteres como < e > apareçam literalmente.
+ */
+function renderHackText(container, commandText, isError = false) {
+    const prompt = document.createElement('span');
+    prompt.className = 'prompt';
+    prompt.textContent = 'root@cybersec:~$ ';
+
+    const command = document.createElement('span');
+    command.className = 'command';
+    command.textContent = commandText;
+    if (isError) command.style.color = '#ff4757';
+
+    container.replaceChildren(prompt, command);
+}
+
+/**
+ * Usa a Clipboard API do navegador, disponível em contextos seguros como HTTPS e localhost.
+ * Como ela retorna uma Promise, quem chama esta função pode tratar sucesso e falha.
  */
 async function copyToClipboard(text) {
-    // Fallback para navegadores mais antigos
-    if (!navigator.clipboard) {
-        return fallbackCopyToClipboard(text);
+    if (!navigator.clipboard?.writeText) {
+        throw new Error('A cópia requer um contexto seguro com suporte à Clipboard API.');
     }
-    
+
     return navigator.clipboard.writeText(text);
 }
 
 /**
- * Fallback para copiar texto
- */
-function fallbackCopyToClipboard(text) {
-    return new Promise((resolve, reject) => {
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        textArea.style.position = 'fixed';
-        textArea.style.opacity = '0';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        
-        try {
-            const successful = document.execCommand('copy');
-            document.body.removeChild(textArea);
-            if (successful) {
-                resolve();
-            } else {
-                reject(new Error('Falha ao copiar'));
-            }
-        } catch (err) {
-            document.body.removeChild(textArea);
-            reject(err);
-        }
-    });
-}
-
-/**
- * Cria efeito de chuva binária
+ * Monta 50 dígitos decorativos. Cada dígito recebe três valores aleatórios:
+ * caractere, posição horizontal e atraso da animação.
  */
 function createBinaryRain(container) {
-    container.innerHTML = '';
+    container.replaceChildren();
     const fragment = document.createDocumentFragment();
+    // Uma única chamada gera 50 × 3 números; dividir por 2^32 transforma-os em valores entre 0 e 1.
+    const randomValues = crypto.getRandomValues(new Uint32Array(150));
     
     for (let i = 0; i < 50; i++) {
+        const randomOffset = i * 3;
         const digit = document.createElement('div');
         digit.className = 'binary-digit';
-        digit.textContent = Math.random() > 0.5 ? '1' : '0';
-        digit.style.left = Math.random() * 100 + '%';
-        digit.style.animationDelay = Math.random() * 5 + 's';
+        digit.textContent = randomValues[randomOffset] / 0x100000000 > 0.5 ? '1' : '0';
+        digit.style.left = `${randomValues[randomOffset + 1] / 0x100000000 * 100}%`;
+        digit.style.animationDelay = `${randomValues[randomOffset + 2] / 0x100000000 * 5}s`;
         fragment.appendChild(digit);
     }
     
     container.appendChild(fragment);
 }
 
-/**
- * Manipula sucesso na cópia
- */
+/** Mostra o resultado positivo e restaura o scroll que foi bloqueado no início. */
 function handleCopySuccess(hackText, hackAnimation, message) {
-    hackText.innerHTML = '<span class="prompt">root@cybersec:~$ </span><span class="command">copy successful!</span>';
+    renderHackText(hackText, 'copy successful!');
     
     setTimeout(() => {
         hackAnimation.classList.remove('active');
-        // Desbloquear scroll
+        // Restaurar os estilos vazios devolve ao navegador o comportamento padrão de scroll.
         document.body.style.overflow = '';
         document.body.style.position = '';
         document.body.style.width = '';
@@ -153,15 +145,13 @@ function handleCopySuccess(hackText, hackAnimation, message) {
     }, 1000);
 }
 
-/**
- * Manipula erro na cópia
- */
+/** Mostra a falha e também restaura o scroll para a página não ficar travada. */
 function handleCopyError(hackText, hackAnimation) {
-    hackText.innerHTML = '<span class="prompt">root@cybersec:~$ </span><span class="command" style="color:#ff4757">copy failed!</span>';
+    renderHackText(hackText, 'copy failed!', true);
     
     setTimeout(() => {
         hackAnimation.classList.remove('active');
-        // Desbloquear scroll
+        // O caminho de erro precisa desfazer o mesmo bloqueio aplicado no início.
         document.body.style.overflow = '';
         document.body.style.position = '';
         document.body.style.width = '';
@@ -170,45 +160,54 @@ function handleCopyError(hackText, hackAnimation) {
     }, 1500);
 }
 
-/**
- * Função para mostrar toast de notificação
- */
+/** Cria uma notificação temporária usando elementos DOM e texto simples. */
 function showToast(message) {
     const toastContainer = DOM.toastContainer;
     const toast = document.createElement('div');
     toast.className = 'toast';
-    toast.innerHTML = `
-        <div class="toast-icon">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <div class="toast-message">${escapeHTML(message)}</div>
-        <button class="toast-close" aria-label="Fechar notificação">
-            <i class="fas fa-times"></i>
-        </button>
-    `;
+    const iconContainer = document.createElement('div');
+    iconContainer.className = 'toast-icon';
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-check-circle';
+    icon.setAttribute('aria-hidden', 'true');
+    iconContainer.append(icon);
+
+    // O texto vem de uma variável; textContent evita que seja executado como marcação HTML.
+    const toastMessage = document.createElement('div');
+    toastMessage.className = 'toast-message';
+    toastMessage.textContent = message;
+
+    const closeButton = document.createElement('button');
+    closeButton.type = 'button';
+    closeButton.className = 'toast-close';
+    closeButton.setAttribute('aria-label', 'Fechar notificação');
+    const closeIcon = document.createElement('i');
+    closeIcon.className = 'fas fa-times';
+    closeIcon.setAttribute('aria-hidden', 'true');
+    closeButton.append(closeIcon);
+
+    toast.append(iconContainer, toastMessage, closeButton);
     
     toastContainer.appendChild(toast);
     
-    // Mostrar toast
+    // Esperar o próximo quadro permite ao navegador aplicar o estado inicial antes da transição.
     setTimeout(() => {
         toast.classList.add('show');
     }, 10);
     
-    // Configurar botão de fechar
-    const closeButton = toast.querySelector('.toast-close');
-    closeButton.addEventListener('click', () => {
+    // O botão remove a notificação antes do tempo automático, se a pessoa preferir.
+    const toastCloseButton = toast.querySelector('.toast-close');
+    toastCloseButton.addEventListener('click', () => {
         hideToast(toast);
     });
     
-    // Auto-remover após 3 segundos
+    // O tempo é centralizado em CONFIG para poder ser ajustado em um só lugar.
     setTimeout(() => {
         hideToast(toast);
     }, CONFIG.animation.toastDuration);
 }
 
-/**
- * Esconde e remove toast
- */
+/** Inicia a transição de saída e remove o elemento quando ela termina. */
 function hideToast(toast) {
     toast.classList.remove('show');
     setTimeout(() => {
@@ -218,16 +217,7 @@ function hideToast(toast) {
     }, 300);
 }
 
-/**
- * Escape HTML para prevenir XSS
- */
-function escapeHTML(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-// Matrix Rain Effect
+// Canvas: a cena é desenhada em pixels, sem criar um elemento HTML para cada caractere.
 const canvas = document.getElementById('matrixRain');
 const ctx = canvas ? canvas.getContext('2d') : null;
 
@@ -236,62 +226,66 @@ let fontSize = CONFIG.matrix.desktopFontSize;
 let columns = 0;
 const drops = [];
 
-/**
- * Configura o canvas do Matrix Rain
- */
+/** Ajusta o canvas à janela e posiciona o início de cada coluna de caracteres. */
 function setupMatrix() {
     if (!canvas || !ctx) return;
     
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
-    // Ajustar tamanho da fonte com base na largura da tela
+    // Uma fonte menor em telas estreitas mantém mais colunas visíveis no celular.
     fontSize = window.innerWidth < 768 ? CONFIG.matrix.mobileFontSize : CONFIG.matrix.desktopFontSize;
     
     columns = Math.floor(canvas.width / fontSize);
     
-    // Reset drops
+    // Redimensionar a tela exige recalcular onde cada coluna começa.
     drops.length = 0;
+    const randomValues = crypto.getRandomValues(new Uint32Array(columns));
     for (let i = 0; i < columns; i++) {
-        drops[i] = Math.floor(Math.random() * canvas.height / fontSize);
+        drops[i] = Math.floor(randomValues[i] / 0x100000000 * canvas.height / fontSize);
     }
 }
 
-/**
- * Desenha o efeito Matrix Rain
- */
+/** Desenha um quadro do Matrix; esta função é chamada repetidamente pelo timer. */
 function drawMatrix() {
     if (!canvas || !ctx) return;
     
+    // O preto semitransparente não apaga o quadro anterior de uma vez: ele cria o rastro.
     ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    ctx.fillStyle = '#ff2a6d';
+    ctx.fillStyle = '#ff5c95';
+    ctx.shadowColor = 'rgba(255, 42, 109, 0.85)';
+    ctx.shadowBlur = 6;
     ctx.font = `${fontSize}px monospace`;
+    const randomValues = crypto.getRandomValues(new Uint32Array(drops.length * 2));
     
+    // Cada índice representa uma coluna; `drops[i]` indica a linha atual dessa coluna.
     for (let i = 0; i < drops.length; i++) {
-        const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+        const randomOffset = i * 2;
+        const text = matrixChars[randomValues[randomOffset] % matrixChars.length];
         const x = i * fontSize;
         const y = drops[i] * fontSize;
         
         ctx.fillText(text, x, y);
         
-        if (y > canvas.height && Math.random() > 0.975) {
+        // Ao chegar ao fim do canvas, a coluna volta ao topo com uma pequena chance aleatória.
+        if (y > canvas.height && randomValues[randomOffset + 1] / 0x100000000 > 0.975) {
             drops[i] = 0;
         }
         
         drops[i]++;
     }
+
+    ctx.shadowBlur = 0;
 }
 
-/**
- * Contador animado para estatísticas
- */
+/** Anima os números das estatísticas do zero até o valor guardado em `data-count`. */
 function animateCounter() {
     const counters = document.querySelectorAll('.stat-number');
     
     counters.forEach(counter => {
-        const target = parseInt(counter.getAttribute('data-count'));
+        const target = Number.parseInt(counter.dataset.count, 10);
         const duration = CONFIG.animation.counterDuration;
         const startTime = performance.now();
         
@@ -299,13 +293,14 @@ function animateCounter() {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
             
-            // Easing function para animação mais suave
+            // Ease-out-quart começa rápido e desacelera perto do valor final.
             const easeOutQuart = 1 - Math.pow(1 - progress, 4);
             const current = Math.floor(easeOutQuart * target);
             
             counter.textContent = current;
             
             if (progress < 1) {
+                // O navegador agenda o próximo passo antes de pintar o próximo quadro.
                 requestAnimationFrame(updateCounter);
             } else {
                 counter.textContent = target;
@@ -316,9 +311,7 @@ function animateCounter() {
     });
 }
 
-/**
- * Inicializa os elementos DOM
- */
+/** Guarda referências aos elementos usados por vários eventos e animações. */
 function initDOMElements() {
     DOM.hackAnimation = document.getElementById('hackAnimation');
     DOM.hackText = document.getElementById('hackText');
@@ -328,13 +321,11 @@ function initDOMElements() {
     DOM.loadingScreen = document.getElementById('loadingScreen');
 }
 
-/**
- * Configura os event listeners de cópia
- */
+/** Liga cada botão de contato ao valor armazenado em seu atributo `data-copy`. */
 function initCopyListeners() {
     document.querySelectorAll('.copyable').forEach(item => {
         item.addEventListener('click', function() {
-            const textToCopy = this.getAttribute('data-copy');
+            const textToCopy = this.dataset.copy;
             if (textToCopy) {
                 copyWithHackAnimation(textToCopy, 'Copiado para a área de transferência!');
             }
@@ -342,20 +333,19 @@ function initCopyListeners() {
     });
 }
 
-/**
- * Simula o carregamento da página
- */
+/** Esconde a tela de entrada após 3,5 s e então inicia os contadores. */
 function simulateLoading() {
     setTimeout(() => {
         if (DOM.loadingScreen) {
             DOM.loadingScreen.classList.add('hidden');
         }
         animateCounter();
-    }, 3000);
+    }, 3500);
 }
 
 /**
- * Debounce para otimizar resize
+ * Adia uma função até os eventos pararem de chegar por `wait` milissegundos.
+ * Isso evita recalcular o canvas dezenas de vezes durante um único redimensionamento.
  */
 function debounce(func, wait) {
     let timeout;
@@ -369,31 +359,174 @@ function debounce(func, wait) {
     };
 }
 
-/**
- * Previne comportamento padrão do Safari iOS no scroll
- */
+/** Bloqueia o toque de rolagem somente enquanto o overlay ocupa a tela. */
 function preventIOSScroll() {
-    let lastY = 0;
-    
-    document.addEventListener('touchstart', function(e) {
-        lastY = e.touches[0].clientY;
-    }, { passive: false });
-    
     document.addEventListener('touchmove', function(e) {
-        if (DOM.hackAnimation && DOM.hackAnimation.classList.contains('active')) {
+        if (DOM.hackAnimation?.classList.contains('active')) {
             e.preventDefault();
         }
     }, { passive: false });
 }
 
-/**
- * Inicialização quando o DOM estiver carregado
- */
+/** Conecta arraste, inércia e botões ao mesmo ângulo 3D da moeda. */
+function initProfileCoin() {
+    const profileCoin = document.querySelector('.profile-coin');
+    if (!profileCoin) return;
+
+    const coinInner = profileCoin.querySelector('.profile-coin-inner');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let rotation = 0;
+    let startX = 0;
+    let startRotation = 0;
+    let previousX = 0;
+    let previousTime = 0;
+    let angularVelocity = 0;
+    let activePointerId = null;
+    let hasDragged = false;
+    let ignoreNextClick = false;
+    let animationFrame = null;
+
+    function readCurrentRotation() {
+        const transform = getComputedStyle(coinInner).transform;
+        if (transform === 'none') return 0;
+
+        const matrix = new DOMMatrixReadOnly(transform);
+        // A matriz guarda a rotação em radianos; atan2 recupera o ângulo Y e a conversão o leva a graus.
+        return Math.atan2(-matrix.m13, matrix.m11) * 180 / Math.PI;
+    }
+
+    function renderRotation(value) {
+        rotation = value;
+        coinInner.style.setProperty('--coin-angle', `${rotation}deg`);
+        // O cosseno distingue as metades do giro: negativo significa que o verso está voltado para frente.
+        profileCoin.classList.toggle('is-back-visible', Math.cos(rotation * Math.PI / 180) < 0);
+    }
+
+    function updateAccessibleState() {
+        // O estado visual também atualiza o nome e o estado do botão para leitores de tela.
+        const showingBack = Math.cos(rotation * Math.PI / 180) < 0;
+        profileCoin.setAttribute('aria-pressed', String(showingBack));
+        profileCoin.setAttribute('aria-label', showingBack ? 'Mostrar foto da frente' : 'Mostrar logo do verso');
+    }
+
+    function rotateBy(degrees) {
+        // Um clique manual interrompe a inércia antes de iniciar um novo giro controlado.
+        if (animationFrame !== null) cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+        rotation = readCurrentRotation();
+        profileCoin.classList.add('is-controlled', 'is-fast');
+        profileCoin.classList.remove('is-spinning', 'is-dragging');
+        angularVelocity = 0;
+        renderRotation(rotation + degrees);
+        updateAccessibleState();
+    }
+
+    function spinWithInertia(frameTime) {
+        const elapsed = Math.min(frameTime - previousTime, 32);
+        previousTime = frameTime;
+        renderRotation(rotation + angularVelocity * elapsed);
+        // Multiplicar a velocidade por um fator menor que 1 faz a moeda desacelerar aos poucos.
+        angularVelocity *= Math.pow(0.985, elapsed / 16);
+
+        if (Math.abs(angularVelocity) > 0.02) {
+            animationFrame = requestAnimationFrame(spinWithInertia);
+        } else {
+            animationFrame = null;
+            profileCoin.classList.remove('is-spinning');
+            updateAccessibleState();
+        }
+    }
+
+    function finishDrag(event) {
+        if (activePointerId !== event.pointerId) return;
+
+        activePointerId = null;
+        profileCoin.classList.remove('is-dragging');
+        // O navegador também dispara click ao soltar; ignorá-lo evita um flip extra após o arraste.
+        ignoreNextClick = hasDragged;
+
+        if (hasDragged && !reduceMotion && Math.abs(angularVelocity) > 0.02) {
+            profileCoin.classList.add('is-spinning');
+            previousTime = performance.now();
+            animationFrame = requestAnimationFrame(spinWithInertia);
+        } else {
+            updateAccessibleState();
+        }
+    }
+
+    profileCoin.addEventListener('pointerdown', event => {
+        if (event.button !== 0) return;
+        if (animationFrame !== null) cancelAnimationFrame(animationFrame);
+
+        animationFrame = null;
+        ignoreNextClick = false;
+        hasDragged = false;
+        activePointerId = event.pointerId;
+        rotation = readCurrentRotation();
+        // Guardar a posição e o ângulo iniciais permite calcular o deslocamento relativo do dedo.
+        startRotation = rotation;
+        startX = event.clientX;
+        previousX = event.clientX;
+        previousTime = performance.now();
+        angularVelocity = 0;
+
+        profileCoin.classList.add('is-controlled', 'is-dragging');
+        profileCoin.classList.remove('is-fast', 'is-spinning');
+        renderRotation(rotation);
+        profileCoin.setPointerCapture(event.pointerId);
+    });
+
+    profileCoin.addEventListener('pointermove', event => {
+        if (activePointerId !== event.pointerId) return;
+
+        const deltaX = event.clientX - startX;
+        const now = performance.now();
+        const elapsed = now - previousTime;
+        // Um limite de 5 px diferencia arraste de toque simples; os pesos suavizam a velocidade.
+        if (Math.abs(deltaX) > 5) hasDragged = true;
+
+        if (hasDragged) {
+            renderRotation(startRotation + deltaX * 1.1);
+            if (elapsed > 0) {
+                const instantVelocity = (event.clientX - previousX) * 1.1 / elapsed;
+                angularVelocity = Math.max(-1.2, Math.min(1.2, angularVelocity * 0.65 + instantVelocity * 0.35));
+            }
+        }
+
+        previousX = event.clientX;
+        previousTime = now;
+    });
+
+    profileCoin.addEventListener('pointerup', finishDrag);
+    profileCoin.addEventListener('pointercancel', finishDrag);
+
+    profileCoin.addEventListener('click', () => {
+        if (ignoreNextClick) {
+            ignoreNextClick = false;
+            return;
+        }
+
+        rotateBy(180);
+    });
+
+    document.querySelectorAll('[data-coin-rotation]').forEach(control => {
+        control.addEventListener('click', () => {
+            rotateBy(Number(control.dataset.coinRotation));
+        });
+    });
+
+    coinInner.addEventListener('transitionend', event => {
+        if (event.propertyName === 'transform') profileCoin.classList.remove('is-fast');
+    });
+}
+
+/** Ponto de entrada: prepara referências e inicia cada recurso depois que o HTML existe. */
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Inicializando aplicação...');
     
     // Inicializar elementos DOM
     initDOMElements();
+    initProfileCoin();
     
     // Configurar Matrix Rain
     setupMatrix();
@@ -413,53 +546,39 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Aplicação carregada com sucesso!');
 });
 
-/**
- * Ajustar canvas quando a janela for redimensionada
- */
+/** Recalcula o canvas após o usuário terminar de redimensionar a janela. */
 window.addEventListener('resize', debounce(function() {
     setupMatrix();
 }, 250));
 
-/**
- * Cleanup quando a página for descarregada
- */
+/** Libera o timer do Matrix quando a página vai fechar ou navegar para outra rota. */
 window.addEventListener('beforeunload', function() {
     if (STATE.matrixInterval) {
         clearInterval(STATE.matrixInterval);
     }
 });
 
-/**
- * Prevenir comportamento padrão em links copyable
- */
+/** Evita a ação padrão do botão de cópia; a ação real é feita pelo listener específico. */
 document.addEventListener('click', function(e) {
     if (e.target.closest('.copyable')) {
         e.preventDefault();
     }
 });
 
-/**
- * Prevenir zoom no iOS ao focar em inputs (caso adicione no futuro)
- */
+/** Mantém um listener passivo de toque, que não bloqueia a rolagem do navegador. */
 document.addEventListener('touchstart', function() {}, { passive: true });
 
-/**
- * Handler para orientação do dispositivo
- */
+/** Reajusta o canvas após girar o celular; o debounce evita recálculos repetidos. */
 window.addEventListener('orientationchange', debounce(function() {
     setupMatrix();
 }, 300));
 
-/**
- * Detectar se está em modo standalone (PWA instalado)
- */
+/** Permite reconhecer a execução instalada como PWA para ajustes futuros. */
 if (window.matchMedia('(display-mode: standalone)').matches) {
     console.log('📱 Executando como PWA');
 }
 
-/**
- * Service Worker para PWA (opcional - descomentar se tiver service worker)
- */
+/** Exemplo opcional: descomente este bloco se o projeto ganhar um arquivo de Service Worker. */
 /*
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
