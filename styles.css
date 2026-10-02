@@ -64,7 +64,7 @@ html {
 body {
     font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--background);
-    color: var(--text-primary);
+    color: var(--text-primary) !important;
     line-height: 1.7;
     min-height: 100vh;
     position: relative;
@@ -72,7 +72,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     /* Forçar fundo escuro no iOS */
-    background-color: #05010a;
+    background-color: #05010a !important;
 }
 
 /* Garantir que todos os elementos tenham fundo escuro */
@@ -137,10 +137,17 @@ img {
 }
 
 .loading-logo {
-    font-size: 3rem;
-    color: var(--neon-pink);
+    display: flex;
+    justify-content: center;
     margin-bottom: 1.5rem;
     animation: loadingPulse 2s infinite;
+}
+
+.loading-logo-image {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 12px var(--neon-pink));
 }
 
 .loading-text {
@@ -178,7 +185,7 @@ img {
     height: 100%;
     z-index: var(--z-background);
     pointer-events: none;
-    opacity: 0.6;
+    opacity: 0.82;
 }
 
 /* ========================================
@@ -374,21 +381,183 @@ img {
     margin-bottom: 1.5rem;
 }
 
-.profile-img {
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid var(--neon-pink);
-    box-shadow: var(--neon-glow-pink);
-    transition: var(--transition);
-    animation: profileFloat 6s ease-in-out infinite;
+.profile-coin-stage {
+    position: relative;
+    width: 260px;
+    max-width: 100%;
     margin: 0 auto;
 }
 
-.profile-img:hover {
-    transform: scale(1.05);
+.coin-control {
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid rgba(217, 222, 229, 0.65);
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.65);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-50%);
+    transition: var(--transition-fast);
+}
+
+.coin-control:hover,
+.coin-control:focus-visible {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.16);
+    box-shadow: var(--neon-glow-pink);
+}
+
+.coin-control:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+
+.coin-control-left {
+    left: 0;
+}
+
+.coin-control-right {
+    right: 0;
+}
+
+.profile-coin {
+    display: block;
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin: 0 auto;
+    padding: 0;
+    border-radius: 50%;
+    background: transparent;
+    perspective: 1000px;
+    touch-action: pan-y;
+    user-select: none;
+    cursor: grab;
+    animation: profileFloat 6s ease-in-out infinite;
+}
+
+.profile-coin.is-dragging {
+    cursor: grabbing;
+}
+
+.profile-coin-inner {
+    position: absolute;
+    inset: 0;
+    display: block;
+    border-radius: 50%;
+    transform-style: preserve-3d;
+    --coin-angle: 0deg;
+    transform: rotateY(var(--coin-angle));
+    transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.profile-coin-inner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border: 3px solid #d9dee5;
+    border-radius: 50%;
+    background: repeating-linear-gradient(90deg, #555e69 0 2px, #d9dee5 2px 4px, #89939f 4px 6px);
+    transform: translateZ(-6px);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.profile-face {
+    position: absolute;
+    inset: 4px;
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+    z-index: 1;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #b8c0c8;
+    box-shadow: var(--neon-glow-pink);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.profile-face-front {
+    transform: translateZ(1px);
+}
+
+.profile-face-back {
+    background: #fff;
+    transform: rotateY(180deg) translateZ(1px);
+}
+
+.profile-coin.is-back-visible .profile-face-front,
+.profile-coin:hover:not(.is-controlled) .profile-face-front,
+.profile-coin:focus-visible:not(.is-controlled) .profile-face-front {
+    visibility: hidden;
+}
+
+.profile-coin:not(.is-back-visible) .profile-face-back {
+    visibility: hidden;
+}
+
+.profile-coin.is-back-visible .profile-face-back,
+.profile-coin:hover:not(.is-controlled) .profile-face-back,
+.profile-coin:focus-visible:not(.is-controlled) .profile-face-back {
+    visibility: visible;
+}
+
+.profile-coin.is-back-visible .profile-face-back {
+    backface-visibility: visible;
+    -webkit-backface-visibility: visible;
+}
+
+.profile-coin:hover:not(.is-controlled) .profile-coin-inner,
+.profile-coin:focus-visible:not(.is-controlled) .profile-coin-inner {
+    --coin-angle: 180deg;
+}
+
+.profile-coin.is-fast .profile-coin-inner {
+    transition-duration: 0.25s;
+}
+
+.profile-coin.is-dragging .profile-coin-inner,
+.profile-coin.is-spinning .profile-coin-inner {
+    transition: none;
+}
+
+.profile-coin:focus-visible {
+    outline: 3px solid var(--text-primary);
+    outline-offset: 6px;
+}
+
+.profile-coin:hover .profile-face,
+.profile-coin:focus-visible .profile-face {
     box-shadow: var(--neon-glow-intense);
+}
+
+@media (max-width: 1023px) {
+    .profile-coin-stage {
+        width: 220px;
+    }
+}
+
+@media (max-width: 767px) {
+    .profile-coin-stage {
+        width: 200px;
+    }
+}
+
+@media (hover: none) {
+    .profile-coin-stage {
+        width: fit-content;
+    }
+
+    .coin-control {
+        display: none;
+    }
 }
 
 .status-indicator {
@@ -698,18 +867,27 @@ img {
 
 .contact-item.copyable::after {
     content: 'Clique para copiar';
-    position: absolute;
-    top: 50%;
-    right: 1rem;
-    transform: translateY(-50%);
+    /* O hint ocupa espaço no flex; assim ele não fica desenhado sobre o e-mail/telefone. */
+    flex: 0 0 auto;
+    max-width: 0;
+    overflow: hidden;
     font-size: 0.7rem;
     color: var(--text-muted);
     opacity: 0;
-    transition: var(--transition);
+    white-space: nowrap;
+    transition: max-width 0.3s ease, opacity 0.2s ease;
 }
 
 .contact-item.copyable:hover::after {
+    max-width: 7rem;
     opacity: 1;
+}
+
+@media (hover: none) {
+    /* Celulares não têm hover confiável; o toque no próprio cartão continua copiando. */
+    .contact-item.copyable::after {
+        display: none;
+    }
 }
 
 .contact-item:hover {
@@ -750,7 +928,7 @@ img {
     font-size: 1rem;
     color: var(--text-primary);
     font-weight: 500;
-    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 /* ========================================
@@ -1010,11 +1188,17 @@ img {
 ======================================== */
 @media (max-width: 767px) {
     .container {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: 1.5rem;
         padding: 1rem;
         width: 100%;
         max-width: 100%;
+    }
+
+    .profile,
+    .main-content,
+    .card {
+        min-width: 0;
     }
     
     .profile {
@@ -1023,9 +1207,23 @@ img {
         border-radius: 16px;
     }
     
-    .profile-img {
+    .profile-coin {
         width: 120px;
         height: 120px;
+    }
+
+    .profile-coin-stage {
+        width: fit-content;
+    }
+
+    .status-indicator {
+        position: static;
+        width: fit-content;
+        margin: 0.75rem auto 0;
+    }
+
+    .coin-control {
+        display: none;
     }
     
     .profile-name {
@@ -1033,12 +1231,17 @@ img {
     }
     
     .profile-stats {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 1rem;
     }
     
     .stat {
+        min-width: 0;
         padding: 0.75rem;
+    }
+
+    .stat-label {
+        overflow-wrap: anywhere;
     }
     
     .stat-number {
@@ -1060,6 +1263,11 @@ img {
     .links-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
+    }
+
+    .link-text,
+    .link-desc {
+        overflow-wrap: anywhere;
     }
     
     .link-card {
@@ -1091,7 +1299,7 @@ img {
     /* Ajustes para textos longos em mobile */
     .contact-value {
         font-size: 0.9rem;
-        word-break: break-word;
+        overflow-wrap: anywhere;
     }
     
     .nfc-badge {
@@ -1106,7 +1314,7 @@ img {
     
     /* Ajuste no matrix rain para mobile */
     #matrixRain {
-        opacity: 0.4;
+        opacity: 0.65;
     }
     
     /* CORREÇÕES ESPECÍFICAS PARA MOBILE - VIEWPORT HEIGHT */
@@ -1155,6 +1363,60 @@ img {
     }
 }
 
+@media (max-width: 360px) {
+    /* Em telas muito estreitas, empilhar dados evita que estatísticas e cartões sejam espremidos. */
+    .container {
+        padding: 0.75rem;
+    }
+
+    .profile,
+    .card {
+        padding: 1rem;
+    }
+
+    .profile-name {
+        font-size: 1.55rem;
+    }
+
+    .profile-stats {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.5rem;
+    }
+
+    .stat {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        text-align: left;
+    }
+
+    .stat-label {
+        text-align: right;
+    }
+
+    .link-card,
+    .contact-item {
+        gap: 0.625rem;
+        padding: 0.75rem;
+    }
+
+    .link-icon,
+    .contact-icon {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+    }
+
+    .link-arrow {
+        display: none;
+    }
+
+    .nfc-badge {
+        padding: 0.75rem;
+    }
+}
+
 /* ========================================
    TABLET (768px - 1023px)
    Mantém o layout desktop mas com ajustes
@@ -1170,7 +1432,7 @@ img {
         padding: 1.5rem;
     }
     
-    .profile-img {
+    .profile-coin {
         width: 140px;
         height: 140px;
     }
@@ -1211,7 +1473,7 @@ img {
         transition-duration: 0.01ms !important;
     }
     
-    .profile-img,
+    .profile-coin,
     .nfc-icon,
     .status-dot {
         animation: none;
@@ -1272,12 +1534,6 @@ img {
         background: rgba(0, 0, 0, 0.4) !important;
         color: #ffffff !important;
     }
-}
-
-/* Forçar tema escuro em todos os navegadores */
-body {
-    background-color: #05010a !important;
-    color: #ffffff !important;
 }
 
 /* Garantir que inputs e outros elementos herdem o tema escuro */
